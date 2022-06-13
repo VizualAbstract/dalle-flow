@@ -3,7 +3,7 @@ services:
   dalle-server:
     container_name: dalle-server
     build:
-      context: ./
+      context: ./server
       dockerfile: Dockerfile
     ports:
       - 51005:51005
@@ -15,6 +15,7 @@ services:
       resources:
         reservations:
           devices:
+            - driver: nvidia
               count: 1
               capabilities: [gpu]
 
