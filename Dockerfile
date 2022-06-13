@@ -1,10 +1,8 @@
-# CODA version set to 11.6
 FROM nvidia/cuda:11.6.0-devel-ubuntu20.04
 
-# Given by builder
+# given by builder
 ARG PIP_TAG
-
-# Something like "gcc libc-dev make libatlas-base-dev ruby-dev"
+# something like "gcc libc-dev make libatlas-base-dev ruby-dev"
 ARG APT_PACKAGES="git wget"
 
 WORKDIR /dalle
@@ -60,7 +58,5 @@ RUN groupadd -g ${GROUP_ID} ${USER_NAME} &&\
 USER ${USER_NAME}
 
 WORKDIR /dalle/dalle-flow
-
-EXPOSE 51005
 
 ENTRYPOINT ["jina", "flow", "--uses", "flow.yml"]

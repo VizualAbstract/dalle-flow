@@ -301,6 +301,16 @@ You can modify and extend the server flow as you like, e.g. changing the model, 
 
 DALL·E Flow is backed by [Jina AI](https://jina.ai) and licensed under [Apache-2.0](./LICENSE). [We are actively hiring](https://jobs.jina.ai) AI engineers, solution engineers to build the next neural search ecosystem in open-source.
 
+## Docker steps
+
+```bash
+docker build --build-arg GROUP_ID=$(id -g ${USER}) --build-arg USER_ID=$(id -u ${USER}) -t jinaai/dalle-flow .
+```
+
+```bash
+docker run -p 51005:51005 -v $HOME/.cache:/home/dalle/.cache --gpus all jinaai/dalle-flow
+```
+
 ## Configuration steps
 
 ```bash

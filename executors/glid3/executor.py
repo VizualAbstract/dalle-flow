@@ -46,8 +46,7 @@ class GLID3Diffusion(Executor):
 
             kw['generator'] = 'GLID3-XL'
             for f in glob.glob(f'{args.output_path}/*.png'):
-                _d = Document(uri=f, text=d.text,
-                              tags=kw).convert_uri_to_datauri()
+                _d = Document(uri=f, text=d.text, tags=kw).convert_uri_to_datauri()
                 d.matches.append(_d)
 
             # remove all outputs

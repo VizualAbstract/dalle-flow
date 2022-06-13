@@ -6,28 +6,23 @@ import jax
 import jax.numpy as jnp
 import numpy as np
 import wandb
-import IPython
 from PIL import Image
 from dalle_mini import DalleBart, DalleBartProcessor
 from flax.jax_utils import replicate
 from flax.training.common_utils import shard_prng_key
 from vqgan_jax.modeling_flax_vqgan import VQModel
 
-# dalle-mini
-DALLE_MINI_MODEL = "dalle-mini/dalle-mini/kvwti2c9:latest"
-DALL_MINI_TYPE = jnp.float32
-
-# dalle-mega
-DALL_MEGA_MODEL = 'dalle-mini/dalle-mini/mega-1:latest'
-DALL_MEGA_TYPE = jnp.float32
+# # dalle-mini
+# DALLE_MODEL = "dalle-mini/dalle-mini/kvwti2c9:latest"
+# dtype = jnp.float32
+#
+# # dalle-mega
+# DALLE_MODEL = 'dalle-mini/dalle-mini/mega-1:latest'
+# dtype=jnp.float32
 
 # dall-mega-fp16
-DALL_MEGA_MODEL_16 = "dalle-mini/dalle-mini/mega-1-fp16:latest"
-DALL_MEGA_TYPE_16 = jnp.float16
-
-# set default
-DALLE_MODEL = DALLE_MINI_MODEL
-dtype = DALL_MINI_TYPE
+DALLE_MODEL = "dalle-mini/dalle-mini/mega-1-fp16:latest"
+dtype = jnp.float16
 
 DALLE_COMMIT_ID = None
 
@@ -39,8 +34,7 @@ gen_top_p = 0.9
 temperature = None
 cond_scale = 10.0
 
-# hack, to avoid concurrent wandb.init, which may cause error when replicas>1
-time.sleep(int(random.random() * 10))
+time.sleep(int(random.random() * 10))  # hack, to avoid concurrent wandb.init, which may cause error when replicas>1
 wandb.init(anonymous='must')
 
 # Load models & tokenizer
@@ -52,7 +46,7 @@ vqgan, vqgan_params = VQModel.from_pretrained(
     VQGAN_REPO, revision=VQGAN_COMMIT_ID, dtype=jnp.float32, _do_init=False
 )
 
-print('Device count(s):', jax.device_count())
+print('device count:', jax.device_count())
 params = replicate(params)
 vqgan_params = replicate(vqgan_params)
 
@@ -79,8 +73,7 @@ def p_decode(indices, params):
     return vqgan.decode_code(indices, params=params)
 
 
-processor = DalleBartProcessor.from_pretrained(
-    DALLE_MODEL, revision=DALLE_COMMIT_ID)
+processor = DalleBartProcessor.from_pretrained(DALLE_MODEL, revision=DALLE_COMMIT_ID)
 
 
 def tokenize_prompt(prompt: str):
@@ -117,10 +110,8 @@ def generate_images(prompt: str, num_predictions: int):
 
         # decode images
         decoded_images = p_decode(encoded_images, vqgan_params)
-        decoded_images = decoded_images.clip(
-            0.0, 1.0).reshape((-1, 256, 256, 3))
+        decoded_images = decoded_images.clip(0.0, 1.0).reshape((-1, 256, 256, 3))
         for img in decoded_images:
-            images.append(Image.fromarray(
-                np.asarray(img * 255, dtype=np.uint8)))
+            images.append(Image.fromarray(np.asarray(img * 255, dtype=np.uint8)))
 
     return images
