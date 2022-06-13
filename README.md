@@ -8,9 +8,6 @@
 <a href="https://slack.jina.ai"><img src="https://img.shields.io/badge/Slack-2.8k-blueviolet?logo=slack&amp;logoColor=white&style=flat-square" alt="Open in Google Colab"></a> <a href="https://colab.research.google.com/github/jina-ai/dalle-flow/blob/main/client.ipynb"><img src="https://img.shields.io/badge/Open-in%20Colab-orange?logo=google-colab&style=flat-square" alt="Open in Google Colab"/></a>
 </p>
 
-
-
-
 DALL·E Flow is an interactive workflow for generating high-definition images from text prompt. First, it leverages [DALL·E-Mega](https://github.com/borisdayma/dalle-mini) to generate image candidates, and then calls [CLIP-as-service](https://github.com/jina-ai/clip-as-service) to rank the candidates w.r.t. the prompt. The preferred candidate is fed to [GLID-3 XL](https://github.com/Jack000/glid-3-xl) for diffusion, which often enriches the texture and background. Finally, the candidate is upscaled to 1024x1024 via [SwinIR](https://github.com/JingyunLiang/SwinIR).
 
 DALL·E Flow is built with [Jina](https://github.com/jina-ai/jina) in a client-server architecture, which gives it high scalability, non-blocking streaming, and a modern Pythonic interface. Client can interact with the server via gRPC/Websocket/HTTP with TLS.
@@ -20,9 +17,9 @@ DALL·E Flow is built with [Jina](https://github.com/jina-ai/jina) in a client-s
 ## Usage
 
 DALL·E Flow is in client-server architecture.
+
 - [Client usage](#Client)
 - [Server usage, i.e. deploy your own server](#Server)
-
 
 ## Updates
 
@@ -30,11 +27,10 @@ DALL·E Flow is in client-server architecture.
 - **2022/5/13b** Removing TLS as Cloudflare gives 100s timeout, making DALLE Flow in usable [Please _reopen_ the notebook in Google Colab!](https://colab.research.google.com/github/jina-ai/dalle-flow/blob/main/client.ipynb).
 - 🔐 **2022/5/13** New Mega checkpoint! All connections are now with TLS, [Please _reopen_ the notebook in Google Colab!](https://colab.research.google.com/github/jina-ai/dalle-flow/blob/main/client.ipynb).
 - 🐳 **2022/5/10** [A Dockerfile is added! Now you can easily deploy your own DALL·E Flow](#run-in-docker). New Mega checkpoint! Smaller memory-footprint, the whole Flow can now fit into **one GPU with 21GB memory**.
-- 🌟 **2022/5/7** New Mega checkpoint & multiple optimization on GLID3: less memory-footprint, use `ViT-L/14@336px` from CLIP-as-service, `steps 100->200`. 
+- 🌟 **2022/5/7** New Mega checkpoint & multiple optimization on GLID3: less memory-footprint, use `ViT-L/14@336px` from CLIP-as-service, `steps 100->200`.
 - 🌟 **2022/5/6** DALL·E Flow just got updated! [Please _reopen_ the notebook in Google Colab!](https://colab.research.google.com/github/jina-ai/dalle-flow/blob/main/client.ipynb)
   - Revised the first step: 16 candidates are generated, 8 from DALL·E Mega, 8 from GLID3-XL; then ranked by CLIP-as-service.
   - Improved the flow efficiency: the overall speed, including diffusion and upscaling are much faster now!
-
 
 ## Gallery
 
@@ -56,9 +52,8 @@ We have provided a demo server for you to play:
 > ⚠️ **Due to the massive requests, our server may be delay in response. Yet we are _very_ confident on keeping the uptime high.** You can also deploy your own server by [following the instruction here](#server).
 
 ```python
-server_url = 'grpc://dalle-flow.jina.ai:51005'
+server_url = 'grpc://localhost:51005'
 ```
-
 
 ### Step 1: Generate via DALL·E Mega
 
@@ -78,8 +73,7 @@ da = Document(text=prompt).post(server_url, parameters={'num_images': 8}).matche
 da.plot_image_sprites(fig_size=(10,10), show_index=True)
 ```
 
-Here we generate 16 candidates, 8 from DALLE-mega and 8 from GLID3 XL, this is as defined in `num_images`, which takes about ~2 minutes. You can use a smaller value if it is too long for you. 
-
+Here we generate 16 candidates, 8 from DALLE-mega and 8 from GLID3 XL, this is as defined in `num_images`, which takes about ~2 minutes. You can use a smaller value if it is too long for you.
 
 <p align="center">
 <img src="https://github.com/jina-ai/dalle-flow/blob/main/.github/client-dalle.png?raw=true" width="70%">
@@ -127,7 +121,6 @@ fav.display()
 <img src="https://github.com/jina-ai/dalle-flow/blob/main/.github/client-select2.png?raw=true" width="30%">
 </p>
 
-
 Finally, submit to the server for the last step: upscaling to 1024 x 1024px.
 
 ```python
@@ -150,22 +143,22 @@ You can host your own server by following the instruction below.
 ### Hardware requirements
 
 DALL·E Flow needs one GPU with 21GB VRAM at its peak. All services are squeezed into this one GPU, this includes (roughly)
+
 - DALLE ~9GB
 - GLID Diffusion ~6GB
 - SwinIR ~3GB
 - CLIP ViT-L/14-336px ~3GB
 
 The following reasonable tricks can be used for further reducing VRAM:
+
 - SwinIR can be moved to CPU (-3GB)
 - CLIP can be delegated to [CLIP-as-service demo server](https://github.com/jina-ai/clip-as-service#text--image-embedding) (-3GB)
-
 
 It requires at least 40GB free space on the hard drive, mostly for downloading pretrained models.
 
 High-speed internet is required. Slow/unstable internet may throw frustrating timeout when downloading models.
 
 CPU-only environment is not tested and likely won't work. Google Colab is likely throwing OOM hence also won't work.
-
 
 ### Server architecture
 
@@ -264,7 +257,7 @@ pip install -r requirements.txt
 
 ### Start the server
 
-Now you are under `dalle-flow/`, run the following command: 
+Now you are under `dalle-flow/`, run the following command:
 
 ```bash
 jina flow --uses flow.yml
@@ -282,18 +275,15 @@ On the first start it will take ~8 minutes for downloading the DALL·E mega mode
 <img src="https://github.com/jina-ai/dalle-flow/blob/main/.github/server-wait.png?raw=true" width="50%">
 </p>
 
-
 When everything is ready, you will see:
 
 <p align="center">
 <img src="https://github.com/jina-ai/dalle-flow/blob/main/.github/server-success.png?raw=true" width="50%">
 </p>
 
-
 Congrats! Now you should be able to [run the client](#client).
 
-You can modify and extend the server flow as you like, e.g. changing the model, adding persistence, or even auto-posting to Instagram/OpenSea. With Jina and DocArray, you can easily make DALL·E Flow [cloud-native and ready for production](https://github.com/jina-ai/jina). 
-
+You can modify and extend the server flow as you like, e.g. changing the model, adding persistence, or even auto-posting to Instagram/OpenSea. With Jina and DocArray, you can easily make DALL·E Flow [cloud-native and ready for production](https://github.com/jina-ai/jina).
 
 <!-- start support-pitch -->
 ## Support
@@ -301,8 +291,8 @@ You can modify and extend the server flow as you like, e.g. changing the model, 
 - To extend DALL·E Flow you will need to get familiar with  [Jina](https://github.com/jina-ai/jina) and [DocArray](https://github.com/jina-ai/docarray).
 - Join our [Slack community](https://slack.jina.ai) and chat with other community members about ideas.
 - Join our [Engineering All Hands](https://youtube.com/playlist?list=PL3UBBWOUVhFYRUa_gpYYKBqEAkO4sxmne) meet-up to discuss your use case and learn Jina's new features.
-    - **When?** The second Tuesday of every month
-    - **Where?**
+  - **When?** The second Tuesday of every month
+  - **Where?**
       Zoom ([see our public events calendar](https://calendar.google.com/calendar/embed?src=c_1t5ogfp2d45v8fit981j08mcm4%40group.calendar.google.com&ctz=Europe%2FBerlin)/[.ical](https://calendar.google.com/calendar/ical/c_1t5ogfp2d45v8fit981j08mcm4%40group.calendar.google.com/public/basic.ics))
       and [live stream on YouTube](https://youtube.com/c/jina-ai)
 - Subscribe to the latest video tutorials on our [YouTube channel](https://youtube.com/c/jina-ai)
