@@ -26,8 +26,8 @@ DALL_MEGA_MODEL_16 = "dalle-mini/dalle-mini/mega-1-fp16:latest"
 DALL_MEGA_TYPE_16 = jnp.float16
 
 # set default
-DALLE_MODEL = DALL_MEGA_MODEL_16
-dtype = DALL_MEGA_TYPE_16
+DALLE_MODEL = DALLE_MINI_MODEL
+dtype = DALL_MINI_TYPE
 
 DALLE_COMMIT_ID = None
 
@@ -52,7 +52,7 @@ vqgan, vqgan_params = VQModel.from_pretrained(
     VQGAN_REPO, revision=VQGAN_COMMIT_ID, dtype=jnp.float32, _do_init=False
 )
 
-print('device count:', jax.device_count())
+print('Device count(s):', jax.device_count())
 params = replicate(params)
 vqgan_params = replicate(vqgan_params)
 
