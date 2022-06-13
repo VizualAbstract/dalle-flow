@@ -301,4 +301,28 @@ You can modify and extend the server flow as you like, e.g. changing the model, 
 
 DALL·E Flow is backed by [Jina AI](https://jina.ai) and licensed under [Apache-2.0](./LICENSE). [We are actively hiring](https://jobs.jina.ai) AI engineers, solution engineers to build the next neural search ecosystem in open-source.
 
+## Configuration steps
+
+```bash
+python
+```
+
+```python
+server_url = 'grpc://localhost:51005'
+server_url = 'grpc://localhost:57867'
+server_url = 'grpc://localhost:65282'
+```
+
+```python
+prompt = 'an oil painting of a humanoid robot playing chess in the style of Matisse'
+```
+
+```python
+from docarray import Document
+
+da = Document(text=prompt).post(server_url, parameters={'num_images': 1}).matches
+
+da.plot_image_sprites(fig_size=(10,10), show_index=True)
+```
+
 <!-- end support-pitch -->
