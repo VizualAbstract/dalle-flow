@@ -1,5 +1,22 @@
 # Dall-E
 
+## Requirements
+
+### Windows
+
+I strongly recommend relying on Docker and using it in WSL mode. One of the packages required for getting the Dall-E server running isn't directly compatible with windows, and attempts at building the package have failed.
+
+#### CUDA Toolkit
+
+Unless you're running the applications manually (as opposed to using docker compose), you shouldn't have to worry about installing CUDA toolkit manually.
+
+However, you'll still need to ensure that Docker is able to communicate with your GPU.
+
+Note that this relies on access to your GPU, and the process for allowing docker access to your GPU is different between the older, Hyper-V version of Docker, and the newer, WSL2 version.
+
+- WSL 2: `https://docs.nvidia.com/cuda/wsl-user-guide/index.html#gpu-accelerated-computing`
+- Hyper-V: `https://docs.nvidia.com/grid/7.0/grid-vgpu-user-guide/index.html#using-gpu-pass-through-windows-server-hyper-v`
+
 ## Docker compose
 
 Get the Dall-E server, backend API and frontend web app running using a single command
