@@ -1,0 +1,44 @@
+services:
+  # Dalle server
+  dalle-server:
+    container_name: dalle-server
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - 51005:51005
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./server:/dalle/dalle-flow #local:workdir
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  # API
+  dalle-api:
+    container_name: dalle-api
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    volumes:
+      - ./api:/app
+
+  # Web UI
+  dalle-web:
+    container_name: dalle-web
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./web:/code
