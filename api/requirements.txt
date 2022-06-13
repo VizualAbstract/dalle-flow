@@ -1,0 +1,4 @@
+# Flask server
+Flask==2.1.0
+Flask-Cors==3.0.9
+Flask-RESTful==0.3.8
